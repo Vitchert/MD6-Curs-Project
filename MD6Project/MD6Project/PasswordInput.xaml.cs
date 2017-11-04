@@ -37,6 +37,12 @@ namespace MD6Project
             bool CurNumber = false;
             bool CurLetter = false;
 
+            if (FirstpasswordBox.Password.Length == 0)
+            {
+                System.Windows.MessageBox.Show("Password can't be empty", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             if (FirstpasswordBox.Password.Length < minLength)
             {
                 System.Windows.MessageBox.Show("Password too short.\nMust be at least " + minLength +" symbols.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
