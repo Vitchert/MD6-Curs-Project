@@ -1,0 +1,27 @@
+﻿<Window x:Class="MD6Project.About"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MD6Project"
+        mc:Ignorable="d"
+        Title="About" Height="311" Width="438" ResizeMode="NoResize" Icon="IconMain.ico">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="410*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0*"/>
+            <RowDefinition/>
+            <RowDefinition Height="0*"/>
+        </Grid.RowDefinitions>
+        <Image x:Name="image" Margin="10,10,0,10" Source="About.png" Grid.Row="1" HorizontalAlignment="Left" Width="145"/>
+        <Label x:Name="label" Content="Курсовой проект по курсу &quot;Защита данных&quot;" HorizontalAlignment="Left" Margin="160,10,0,0" Grid.RowSpan="2" VerticalAlignment="Top"/>
+        <Label x:Name="label1" Content="Преподаватель Хорев П.Б." HorizontalAlignment="Left" Margin="160,40.96,0,0" Grid.RowSpan="2" VerticalAlignment="Top" RenderTransformOrigin="1.395,0.541"/>
+        <Label x:Name="label2" Content="Выполнил Черток В.Д." HorizontalAlignment="Left" Margin="160,71.92,0,0" Grid.RowSpan="2" VerticalAlignment="Top" RenderTransformOrigin="-0.342,0.193"/>
+        <Label x:Name="label3" Content="Группа А-05-14" HorizontalAlignment="Left" Margin="160,102.88,0,0" Grid.RowSpan="2" VerticalAlignment="Top" RenderTransformOrigin="0,0"/>
+        <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="131.16" Margin="160,133.84,0,0" Grid.RowSpan="2" TextWrapping="Wrap" VerticalAlignment="Top" Width="251.927" Text="Программна реализация функции &#xA;хеширования MD6.&#xA;Хеширование файлов и&#xA;вводимых пользователем сообщений.&#xA;Возможность настройки параметров &#xA;алгоритма хеширования и использования &#xA;пользовательского ключа.&#xD;&#xA;Возможность генерации пользовательского ключа на основе парольной фразы с регулируемой минимальной длиной и сложностью."/>
+
+    </Grid>
+</Window>
