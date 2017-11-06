@@ -26,7 +26,7 @@
                 <MenuItem x:Name="menuFileSaveHashButton" Header="Save Hash" HorizontalAlignment="Left" Width="165" Margin="0,0,-20.493,0" IsEnabled="False" Click="menuFileSaveHashButton_Click"/>
                 <MenuItem x:Name="menuFileSaveHashAsButton" Header="Save Hash As..." HorizontalAlignment="Left" Width="165" Margin="0,0,-20.493,0" IsEnabled="False" Click="menuFileSaveHashAsButton_Click"/>
                 <Separator/>
-                <MenuItem x:Name="menuFileSaveKeyAsButton" Header="_SaveKey As..." IsEnabled="False" Margin="0,0,-20.461,0" Click="menuFileSaveKeyAsButton_Click"/>
+                <MenuItem x:Name="menuFileSaveKeyAsButton" Header="_Save Key As..." IsEnabled="False" Margin="0,0,-20.461,0" Click="menuFileSaveKeyAsButton_Click"/>
                 <Separator/>
                 <MenuItem x:Name="menuFileSaveTextAsButton" Header="Save Text As..." HorizontalAlignment="Left" Width="165" Margin="0,0,-20.493,0" IsEnabled="False" Click="menuFileSaveTextAsButton_Click"/>
                 <Separator/>
