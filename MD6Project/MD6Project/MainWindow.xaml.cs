@@ -284,6 +284,7 @@ namespace MD6Project
                 MD6ProgressBarLabel.Content = "Done";
                 MD6HashResultLabel.Content = "Calculated Hash";
                 MD6Hash.Text = e.Result.ToString();
+                MD6Hash.IsEnabled = false;
                 MD6ProgressBar.IsIndeterminate = false;
                 hashFile = "";
                 menuFileSaveHashButton.IsEnabled = false;
