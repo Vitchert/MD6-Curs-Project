@@ -96,7 +96,7 @@ namespace MD6Project
             UInt64 readCount = (UInt64)Message.Length;
             byte[] buf = new byte[8];
 
-            byte[] stringArray = Encoding.ASCII.GetBytes(str);
+            byte[] stringArray = Encoding.UTF8.GetBytes(str);
 
             for (UInt64 k = 0; k < readCount; ++k)
             {
@@ -198,7 +198,7 @@ namespace MD6Project
 
             byte[] stringArray;
             if (!isHexString) {
-                stringArray = Encoding.ASCII.GetBytes(str);
+                stringArray = Encoding.UTF8.GetBytes(str);
             }
             else
             {

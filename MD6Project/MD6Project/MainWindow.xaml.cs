@@ -76,6 +76,7 @@ namespace MD6Project
                     CalculateHashButton.IsEnabled = true;
                     textFileToHash.IsEnabled = false;
                     CompareHashButton.IsEnabled = true;
+                    menuFileSaveTextAsButton.IsEnabled = false;
                 }
                 else
                 {
@@ -232,42 +233,57 @@ namespace MD6Project
                 bool isHexString = (bool)genericlist[7];
 
                 MD6 HashFunction = new MD6(d, L, r);
-                if (messageFilepath == "")
+                try
                 {
-                    HashFunction.readMessageString(messageText);
-                }
-                else
-                {
-                    if (HashFunction.readMessageFile(messageFilepath) != MD6.OK)
+                    if (messageFilepath == "")
                     {
-                        //System.Windows.MessageBox.Show("Message File does not exist", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        e.Cancel = true;
-                        e.Result = "Message File does not exist";
-                        return;
+                        HashFunction.readMessageString(messageText);
+                    }
+                    else
+                    {
+                        if (HashFunction.readMessageFile(messageFilepath) != MD6.OK)
+                        {
+                            throw new Exception("Message File does not exist");
+                        }
                     }
                 }
+                catch(Exception ex)
+                {
+                    throw new Exception("Error when reading file.\n" + ex.Message);
+                }
+                try
+                {
+                    int errNum;
+                    if (keyFilepath == "")
+                    {
+                        errNum = HashFunction.readKeyString(keyText, isHexString);
+                    }
+                    else
+                    {
+                        errNum = HashFunction.readKeyFile(keyFilepath);
+                    }
 
-                int errNum;
-                if (keyFilepath == "")
-                {
-                    errNum = HashFunction.readKeyString(keyText, isHexString);
+                    if (errNum == MD6.NO_FILE)
+                    {
+                        throw new Exception("Key File does not exist");
+                    }
+                    if (errNum == MD6.WRONG_FILE_SIZE)
+                    {
+                        throw new Exception("Key file too big.\nExpected length <= 512 bytes.");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    errNum = HashFunction.readKeyFile(keyFilepath);
+                    throw new Exception("Error when reading key.\n" + ex.Message);
                 }
-
-                if (errNum == MD6.NO_FILE)
+                try
                 {
-                    throw new Exception("Key File does not exist");
-                    return;
+                    e.Result = HashFunction.Hash();
                 }
-                if (errNum == MD6.WRONG_FILE_SIZE)
+                catch (Exception ex)
                 {
-                    throw new Exception("Key file too big.\nExpected length <= 512 bytes.");
-                    return;
+                    throw new Exception("Error when calculating hash value.\n" + ex.Message);
                 }
-                e.Result = HashFunction.Hash();
             }
             catch(Exception ex)
             {
@@ -282,7 +298,7 @@ namespace MD6Project
             {
                 MD6ProgressBarLabel.Content = "Cancelled";
                 MD6ProgressBar.IsIndeterminate = false;
-                System.Windows.MessageBox.Show("Cancelled", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                System.Windows.MessageBox.Show("Process Canceled", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             else if (!(e.Error == null))
             {
@@ -314,7 +330,7 @@ namespace MD6Project
             {
                 MD6ProgressBarLabel.Content = "Cancelled";
                 MD6ProgressBar.IsIndeterminate = false;
-                System.Windows.MessageBox.Show("Cancelled", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                System.Windows.MessageBox.Show("Process Canceled", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             else if (!(e.Error == null))
@@ -348,7 +364,7 @@ namespace MD6Project
             {
                 MD6ProgressBarLabel.Content = "Cancelled";
                 MD6ProgressBar.IsIndeterminate = false;
-                System.Windows.MessageBox.Show("Cancelled", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                System.Windows.MessageBox.Show("Process Canceled", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             else if (!(e.Error == null))
@@ -386,7 +402,7 @@ namespace MD6Project
             {
                 MD6ProgressBarLabel.Content = "Cancelled";
                 MD6ProgressBar.IsIndeterminate = false;
-                System.Windows.MessageBox.Show("Cancelled", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                System.Windows.MessageBox.Show("Process Canceled", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             else if (!(e.Error == null))
@@ -416,6 +432,7 @@ namespace MD6Project
         private void MenuEditOptionsButton_Click(object sender, RoutedEventArgs e)
         {            
             opt.Show();
+            opt.Activate();
         }
 
         public string messageFile;
@@ -434,7 +451,7 @@ namespace MD6Project
                 {
                     System.IO.FileStream fs =
                        (System.IO.FileStream)saveFileDialog.OpenFile();
-                    byte[] stringArray = Encoding.ASCII.GetBytes(MD6Hash.Text);
+                    byte[] stringArray = Encoding.UTF8.GetBytes(MD6Hash.Text);
                     fs.Write(stringArray, 0, stringArray.Length);
                     fs.Close();
                     menuFileSaveHashButton.IsEnabled = true;
@@ -453,7 +470,7 @@ namespace MD6Project
             try
             {
                 System.IO.FileStream fs = new System.IO.FileStream(hashFile, System.IO.FileMode.Create);
-                byte[] stringArray = Encoding.ASCII.GetBytes(MD6Hash.Text);
+                byte[] stringArray = Encoding.UTF8.GetBytes(MD6Hash.Text);
                 fs.Write(stringArray, 0, stringArray.Length);
                 fs.Close();
             }
@@ -475,7 +492,7 @@ namespace MD6Project
                 {
                     System.IO.FileStream fs =
                        (System.IO.FileStream)saveFileDialog.OpenFile();
-                    byte[] stringArray = Encoding.ASCII.GetBytes(textKey.Text);
+                    byte[] stringArray = Encoding.UTF8.GetBytes(textKey.Text);
                     fs.Write(stringArray, 0, stringArray.Length);
                     fs.Close();
                     menuFileSaveHashButton.IsEnabled = true;
@@ -499,7 +516,7 @@ namespace MD6Project
                 {
                     System.IO.FileStream fs =
                        (System.IO.FileStream)saveFileDialog.OpenFile();
-                    byte[] stringArray = Encoding.ASCII.GetBytes(textFileToHash.Text);
+                    byte[] stringArray = Encoding.UTF8.GetBytes(textFileToHash.Text);
                     fs.Write(stringArray, 0, stringArray.Length);
                     fs.Close();
                     menuFileSaveHashButton.IsEnabled = true;
@@ -525,6 +542,7 @@ namespace MD6Project
         private void MenuEditPasswordoptions_Click(object sender, RoutedEventArgs e)
         {
             PassOpt.Show();
+            PassOpt.Activate();
         }
 
         private void PasswordKeyButton_Click(object sender, RoutedEventArgs e)
