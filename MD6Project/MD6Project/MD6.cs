@@ -175,7 +175,16 @@ namespace MD6Project
             return (OK);
         }
 
-        public int readKeyString(string str)
+        public static byte[] StringToByteArray(String hex)
+        {
+            int NumberChars = hex.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+            for (int i = 0; i < NumberChars; i += 2)
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            return bytes;
+        }
+
+        public int readKeyString(string str, bool isHexString)
         {
             keylen = (uint)str.Length;
             if (keylen > 512)
@@ -184,10 +193,20 @@ namespace MD6Project
             }
             Key = new UInt64[8];
 
-            UInt64 readCount = (UInt64)(keylen/8 + ( (keylen%8 > 0) ? 1:0));
+            
             byte[] buf = new byte[8];
 
-            byte[] stringArray = Encoding.ASCII.GetBytes(str);
+            byte[] stringArray;
+            if (!isHexString) {
+                stringArray = Encoding.ASCII.GetBytes(str);
+            }
+            else
+            {
+                stringArray = StringToByteArray(str);
+                keylen /= 2;
+            }
+
+            UInt64 readCount = (UInt64)(keylen / 8 + ((keylen % 8 > 0) ? 1 : 0));
 
             for (UInt64 k = 0; k < readCount; ++k)
             {
@@ -220,7 +239,7 @@ namespace MD6Project
                 }
             }
             return (OK);
-        }
+        }      
 
         public string Hash()
         {

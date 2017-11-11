@@ -187,9 +187,15 @@ namespace MD6Project
                 arguments.Add(textFileToHash.Text);
                 arguments.Add(keyFile);
                 if (PasswordString != "")
+                {
                     arguments.Add(PasswordString);
+                    arguments.Add(true);//Flag indicates that string is hex value
+                }
                 else
+                {
                     arguments.Add(textKey.Text);
+                    arguments.Add(false);//Flag indicates that string is not hex value
+                }
 
                 bw.RunWorkerAsync(arguments);                
             }
@@ -221,7 +227,7 @@ namespace MD6Project
             string messageText = (string)genericlist[4];
             string keyFilepath = (string)genericlist[5];
             string keyText = (string)genericlist[6];
-
+            bool isHexString = (bool)genericlist[7];
 
             MD6 HashFunction = new MD6(d, L, r);
             if (messageFilepath == "")
@@ -242,7 +248,7 @@ namespace MD6Project
             int errNum;
             if (keyFilepath == "")
             {
-                errNum = HashFunction.readKeyString(keyText);
+                errNum = HashFunction.readKeyString(keyText, isHexString);
             }
             else
             {
@@ -319,6 +325,39 @@ namespace MD6Project
                 labelKey.Content = "User key from password selected";
                 keyFile = "";
 
+            }
+        }
+
+        public void bw_RunWorkerCompletedComparePasswordInput(object sender, RunWorkerCompletedEventArgs e)
+        {
+            bw.RunWorkerCompleted -=
+               new RunWorkerCompletedEventHandler(bw_RunWorkerCompletedComparePasswordInput);
+            if ((e.Cancelled == true))
+            {
+                System.Windows.MessageBox.Show(e.Result.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            else if (!(e.Error == null))
+            {
+                System.Windows.MessageBox.Show(e.Error.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            else
+            {
+                System.GC.Collect();
+                bw.RunWorkerCompleted +=
+                    new RunWorkerCompletedEventHandler(bw_RunWorkerCompletedCompare);
+
+                List<object> arguments = new List<object>();
+                arguments.Add(Options.Instance.dVal);
+                arguments.Add(Options.Instance.Lval);
+                arguments.Add(Options.Instance.rVal);
+                arguments.Add(messageFile);
+                arguments.Add(textFileToHash.Text);
+                arguments.Add("");//No keyfile
+                arguments.Add(e.Result.ToString());//Key as result of hash function
+                arguments.Add(true);//Flag indicates that string is hex value
+                bw.RunWorkerAsync(arguments);
             }
         }
 
@@ -482,25 +521,10 @@ namespace MD6Project
             
             if (bw.IsBusy != true)
             {
-                System.GC.Collect();
-                bw.RunWorkerCompleted +=
-                    new RunWorkerCompletedEventHandler(bw_RunWorkerCompletedCompare);
-                MD6ProgressBarLabel.Content = "Calculating";
-                MD6ProgressBar.IsIndeterminate = true;
-
-                List<object> arguments = new List<object>();
-                arguments.Add(Options.Instance.dVal);
-                arguments.Add(Options.Instance.Lval);
-                arguments.Add(Options.Instance.rVal);
-                arguments.Add(messageFile);
-                arguments.Add(textFileToHash.Text);
-                arguments.Add(keyFile);
-                if(PasswordString != "")
-                    arguments.Add(PasswordString);
-                else
-                    arguments.Add(textKey.Text);
-
-                bw.RunWorkerAsync(arguments);
+                ComparePasswordinput passInt = new ComparePasswordinput();
+                passInt.ShowDialog();
+                passInt = null;
+                return;
             }
         }
     }

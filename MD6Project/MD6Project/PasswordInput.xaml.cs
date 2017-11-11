@@ -97,6 +97,7 @@ namespace MD6Project
             arguments.Add(FirstpasswordBox.Password);
             arguments.Add("");
             arguments.Add("");
+            arguments.Add(false);//Flag indicates that string is not hex value
 
             MainWindow.Instance.bw.RunWorkerAsync(arguments);
             this.Close();
