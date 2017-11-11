@@ -219,57 +219,60 @@ namespace MD6Project
 
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            List<object> genericlist = e.Argument as List<object>;
-            uint d = (uint)Convert.ToInt32(genericlist[0]);
-            uint L = (uint)Convert.ToInt32(genericlist[1]);
-            uint r = (uint)Convert.ToInt32(genericlist[2]);
-            string messageFilepath = (string)genericlist[3];
-            string messageText = (string)genericlist[4];
-            string keyFilepath = (string)genericlist[5];
-            string keyText = (string)genericlist[6];
-            bool isHexString = (bool)genericlist[7];
+            try
+            {
+                List<object> genericlist = e.Argument as List<object>;
+                uint d = (uint)Convert.ToInt32(genericlist[0]);
+                uint L = (uint)Convert.ToInt32(genericlist[1]);
+                uint r = (uint)Convert.ToInt32(genericlist[2]);
+                string messageFilepath = (string)genericlist[3];
+                string messageText = (string)genericlist[4];
+                string keyFilepath = (string)genericlist[5];
+                string keyText = (string)genericlist[6];
+                bool isHexString = (bool)genericlist[7];
 
-            MD6 HashFunction = new MD6(d, L, r);
-            if (messageFilepath == "")
-            {
-                HashFunction.readMessageString(messageText);
-            }
-            else
-            {
-                if (HashFunction.readMessageFile(messageFilepath) != MD6.OK)
+                MD6 HashFunction = new MD6(d, L, r);
+                if (messageFilepath == "")
                 {
-                    //System.Windows.MessageBox.Show("Message File does not exist", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    e.Cancel = true;
-                    e.Result = "Message File does not exist";
+                    HashFunction.readMessageString(messageText);
+                }
+                else
+                {
+                    if (HashFunction.readMessageFile(messageFilepath) != MD6.OK)
+                    {
+                        //System.Windows.MessageBox.Show("Message File does not exist", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        e.Cancel = true;
+                        e.Result = "Message File does not exist";
+                        return;
+                    }
+                }
+
+                int errNum;
+                if (keyFilepath == "")
+                {
+                    errNum = HashFunction.readKeyString(keyText, isHexString);
+                }
+                else
+                {
+                    errNum = HashFunction.readKeyFile(keyFilepath);
+                }
+
+                if (errNum == MD6.NO_FILE)
+                {
+                    throw new Exception("Key File does not exist");
                     return;
                 }
+                if (errNum == MD6.WRONG_FILE_SIZE)
+                {
+                    throw new Exception("Key file too big.\nExpected length <= 512 bytes.");
+                    return;
+                }
+                e.Result = HashFunction.Hash();
             }
-            
-            int errNum;
-            if (keyFilepath == "")
+            catch(Exception ex)
             {
-                errNum = HashFunction.readKeyString(keyText, isHexString);
+                throw ex;
             }
-            else
-            {
-                errNum = HashFunction.readKeyFile(keyFilepath);
-            }
-            
-            if (errNum == MD6.NO_FILE)
-            {
-                //System.Windows.MessageBox.Show("Key File does not exist", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                e.Cancel = true;
-                e.Result = "Key File does not exist";
-                return;
-            }
-            if (errNum == MD6.WRONG_FILE_SIZE)
-            {
-                //System.Windows.MessageBox.Show("Key file too big.\nExpected length <= 512 bytes.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                e.Cancel = true;
-                e.Result = "Key file too big.\nExpected length <= 512 bytes.";
-                return;
-            }
-            e.Result = HashFunction.Hash();
         }
         private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -277,10 +280,14 @@ namespace MD6Project
                new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
             if ((e.Cancelled == true))
             {
-                System.Windows.MessageBox.Show(e.Result.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MD6ProgressBarLabel.Content = "Cancelled";
+                MD6ProgressBar.IsIndeterminate = false;
+                System.Windows.MessageBox.Show("Cancelled", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             else if (!(e.Error == null))
             {
+                MD6ProgressBarLabel.Content = "Error";
+                MD6ProgressBar.IsIndeterminate = false;
                 System.Windows.MessageBox.Show(e.Error.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -305,10 +312,15 @@ namespace MD6Project
                new RunWorkerCompletedEventHandler(bw_RunWorkerCompletedPassword);
             if ((e.Cancelled == true))
             {
-                System.Windows.MessageBox.Show(e.Result.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MD6ProgressBarLabel.Content = "Cancelled";
+                MD6ProgressBar.IsIndeterminate = false;
+                System.Windows.MessageBox.Show("Cancelled", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
             else if (!(e.Error == null))
             {
+                MD6ProgressBarLabel.Content = "Error";
+                MD6ProgressBar.IsIndeterminate = false;
                 System.Windows.MessageBox.Show(e.Error.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -334,10 +346,15 @@ namespace MD6Project
                new RunWorkerCompletedEventHandler(bw_RunWorkerCompletedComparePasswordInput);
             if ((e.Cancelled == true))
             {
-                System.Windows.MessageBox.Show(e.Result.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MD6ProgressBarLabel.Content = "Cancelled";
+                MD6ProgressBar.IsIndeterminate = false;
+                System.Windows.MessageBox.Show("Cancelled", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
             else if (!(e.Error == null))
             {
+                MD6ProgressBarLabel.Content = "Error";
+                MD6ProgressBar.IsIndeterminate = false;
                 System.Windows.MessageBox.Show(e.Error.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -367,10 +384,15 @@ namespace MD6Project
                new RunWorkerCompletedEventHandler(bw_RunWorkerCompletedCompare);
             if ((e.Cancelled == true))
             {
-                System.Windows.MessageBox.Show(e.Result.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MD6ProgressBarLabel.Content = "Cancelled";
+                MD6ProgressBar.IsIndeterminate = false;
+                System.Windows.MessageBox.Show("Cancelled", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
             else if (!(e.Error == null))
             {
+                MD6ProgressBarLabel.Content = "Error";
+                MD6ProgressBar.IsIndeterminate = false;
                 System.Windows.MessageBox.Show(e.Error.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
