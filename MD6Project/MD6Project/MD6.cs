@@ -100,7 +100,16 @@ namespace MD6Project
 
             for (UInt64 k = 0; k < readCount; ++k)
             {
-                int copySize = k < (readCount - 1) ? 8 : (int)Messagelength%8;
+                int copySize = 0;
+                if (k < (readCount - 1))
+                {
+                    copySize = 8;
+                }
+                else
+                {
+                    copySize = (int)((Messagelength % 8 > 0) ? (Messagelength % 8) : 8);
+                }
+
                 Array.Copy(stringArray,(int)k*8,buf,0, copySize);
                 if (BitConverter.IsLittleEndian)
                 {
@@ -210,7 +219,16 @@ namespace MD6Project
 
             for (UInt64 k = 0; k < readCount; ++k)
             {
-                int copySize = k < (readCount - 1) ? 8 : (int)keylen % 8;
+                int copySize = 0;
+                if (k < (readCount - 1))
+                {
+                    copySize = 8;
+                }
+                else
+                {
+                    copySize = (int)((keylen % 8 > 0) ? (keylen % 8) : 8);
+                }
+
                 Array.Copy(stringArray, (int)k * 8, buf, 0, copySize);
                 if (BitConverter.IsLittleEndian)
                 {
